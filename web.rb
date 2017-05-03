@@ -2,6 +2,6 @@ require 'sinatra'
 require 'dotenv/load'
 
 ### Routes ###
-get '/health' do
+get '/' do
   'Hello world!'
 end
