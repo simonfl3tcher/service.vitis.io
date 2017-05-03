@@ -10,7 +10,7 @@ end
 
 ### Routes ###
 get '/' do
-  'Hello Simon Fletcher!'
+  'Hello World!'
 end
 
 get '/collections/?' do
