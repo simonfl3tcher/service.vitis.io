@@ -3,5 +3,5 @@ require 'dotenv/load'
 
 ### Routes ###
 get '/' do
-  'Hello world!'
+  'Hello Simon!'
 end
