@@ -1,45 +1,84 @@
 require 'sinatra'
 require 'dotenv/load'
 require 'mongo'
-require 'json/ext' # required for .to_json
+require 'mongoid'
+require 'json/ext'
 
 configure do
-  mongodb_client = Mongo::Client.new(ENV['MONGODB_URI'])
-  set :mongo_db, mongodb_client
-  enable :sessions
-end
-
-helpers do
-  def admin?
-    session[:admin]
-  end
+  Mongoid.load!("./mongoid.yml")
 end
 
 ### Routes ###
-get '/' do
-  'Hello World!'
-end
-
-get '/collections/?' do
+post '/users' do
   content_type :json
-  settings.mongo_db.database.collection_names.to_json
+  @user = User.find_or_create_by!(
+    :twitter_id => params[:user][:twitter_id],
+    :name =>  params[:user][:name],
+    :image_url => params[:user][:image_url],
+  )
+
+  status 201
+  {id: @user.id.to_s }.to_json
 end
 
-get '/public' do
-  "This is the public page - everybody is welcome!"
+get '/users/:id/feeds' do
+  content_type :json
+  @user = User.find(params[:id])
+  status 200
+  @user.feeds.to_json
 end
 
-get '/private' do
-  halt(401,'Not Authorized') unless admin?
-  "This is the private page - members only"
+post '/users/:id/feeds' do
+  content_type :json
+  @user = User.find(params[:id])
+  @user.feeds << Feed.new(:name => params[:name])
+  @user.save
+
+  status 201
+  @user.to_json
 end
 
-get '/login' do
-  session[:admin] = true
-  "You are now logged in"
+get '/users/:id/feeds/:feed_id' do
+  content_type :json
+  @user = User.find(params[:id])
+
+  status 200
+  @user.feeds.find(params[:feed_id]).to_json
 end
 
-get '/logout' do
-  session[:admin] = nil
-  "You are now logged out"
+put '/users/:id/feeds/:feed_id' do
+  content_type :json
+  @user = User.find(params[:id])
+  feed = @user.feeds.find(params[:feed_id])
+  feed.update(
+    :name => params[:name]
+  )
+
+  status 200
+  feed.to_json
+end
+
+delete '/users/:id/feeds/:feed_id' do
+  content_type :json
+  @user = User.find(params[:id])
+  @user.feeds.find(params[:feed_id]).destroy
+
+  status 204
+end
+
+class Feed
+  include Mongoid::Document
+  field :name, type: String
+  embedded_in :user
+end
+
+class User
+  include Mongoid::Document
+
+  field :twitter_id,    type: String
+  field :name,          type: String
+  field :image_url,     type: String
+
+  embeds_many :feeds
+  accepts_nested_attributes_for :feeds
 end

@@ -1,0 +1,21 @@
+development:
+  clients:
+    default:
+      uri: <%= ENV['MONGODB_URI'] %>
+test:
+  clients:
+    default:
+      database: vitis_test
+      hosts:
+        - 127.0.0.1:27017
+      options:
+        read:
+          mode: :primary
+        max_pool_size: 1
+  production:
+    clients:
+      default:
+        uri: <%= ENV['MONGODB_URI'] %>
+        options:
+          skip_version_check: true
+          safe: true
