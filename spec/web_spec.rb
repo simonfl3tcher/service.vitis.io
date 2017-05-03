@@ -16,4 +16,10 @@ describe 'The HelloWorld App' do
     expect(last_response).to be_ok
     expect(last_response.body).to eq('Hello World!')
   end
+
+  it "returns a blank slate of mongo records" do
+    get "/collections/?"
+    expect(last_response).to be_ok
+    expect(last_response.body).to eq([].to_json)
+  end
 end
