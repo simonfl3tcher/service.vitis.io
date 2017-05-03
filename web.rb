@@ -4,8 +4,8 @@ require 'mongo'
 require 'json/ext' # required for .to_json
 
 configure do
-  db = Mongo::Client.new([ ENV['MONGODB_URI'] ], :database => 'vitis')
-  set :mongo_db, db[:vitis]
+  mongodb_client = Mongo::Client.new(ENV['MONGODB_URI'])
+  set :mongo_db, mongodb_client
 end
 
 ### Routes ###
