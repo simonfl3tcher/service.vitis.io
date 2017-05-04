@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'dotenv/load'
 require 'mongo'
 require 'mongoid'
 require 'json/ext'
