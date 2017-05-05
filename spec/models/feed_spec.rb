@@ -18,6 +18,28 @@ describe Feed do
       expect(feed.valid?).to eq(true)
     end
 
+    describe "users" do
+      it "should validate presence if type is a list" do
+        feed = Feed.new(
+          :name  => "Simon Fletcher",
+          :type  => "list",
+          :users => []
+        )
+
+        expect(feed.valid?).to eq(false)
+      end
+
+      it "should not validate presence if type is not a list" do
+        feed = Feed.new(
+          :name  => "Simon Fletcher",
+          :type  => "search",
+          :users => []
+        )
+
+        expect(feed.valid?).to eq(true)
+      end
+    end
+
     describe "type inclusion" do
       it "should be valid with a type of search" do
         feed = Feed.new(
@@ -31,6 +53,15 @@ describe Feed do
         feed = Feed.new(
           :name => "Simon Fletcher",
           :type => "timeline"
+        )
+        expect(feed.valid?).to eq(true)
+      end
+
+      it "should be valid with a type of list (needs to have users)" do
+        feed = Feed.new(
+          :name  => "Simon Fletcher",
+          :type  => "list",
+          :users => ["simonfl3tcher"]
         )
         expect(feed.valid?).to eq(true)
       end

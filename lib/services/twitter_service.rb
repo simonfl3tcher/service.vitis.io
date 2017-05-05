@@ -21,7 +21,8 @@ class TwitterService
       @client.search(
         @feed.search_parameter,
         result_type: "recent",
-        lang: "en"
+        lang: "en",
+        include_rts: false
       ).take(LIMIT)
     end
   end
