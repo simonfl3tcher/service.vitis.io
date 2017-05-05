@@ -6,6 +6,7 @@ gem 'mongo', '~> 2.2', '>= 2.2.5'
 gem 'mongoid', '~> 6.1.0'
 gem 'rack-test'
 gem 'sinatra', '1.4.0'
+gem 'omniauth-twitter'
 
 group :development, :test do
   gem 'mongoid-rspec', github: 'mongoid-rspec/mongoid-rspec'

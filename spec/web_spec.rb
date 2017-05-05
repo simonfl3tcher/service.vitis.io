@@ -1,4 +1,5 @@
-ENV['RACK_ENV'] = 'test'
+ENV['RACK_ENV']='test'
+ENV['SESSION_SECRET']='123abc'
 
 require 'web'
 require 'rspec'
@@ -14,54 +15,13 @@ describe 'The web service' do
   before(:each) do
     @user = User.create(
       twitter_id: "134324123",
-      name: "Andy Blogg",
+      token:      "1231241",
+      secret:     "1231241",
+      username:   "simonfl3tcher",
+      name:       "Andy Blogg",
       image_url: "http://simonfl3tcher.com"
     )
-    @user.feeds << Feed.new(:name => "YOLO")
-  end
-
-  describe "POST /users" do
-    before(:all) do
-      @params = {
-        user: {
-          twitter_id: "1231241",
-          name: "Simon Fletcher",
-          image_url: "http://simonfl3tcher.com"
-        }
-      }
-    end
-
-    it "Creates user if it doesn't exist" do
-      post '/users', @params, { format: 'application/vnd.api+json' }
-
-      expect(last_response.content_type).to eq("application/vnd.api+json")
-      expect(last_response.body).to be_a(String)
-    end
-
-    it "does not create user if it already exist" do
-      @user = User.create!(@params[:user])
-
-      post '/users', @params, { format: 'json' }
-
-      expect(last_response.content_type).to eq("application/vnd.api+json")
-      expect(JSON.parse(last_response.body)["data"]["id"]).to eq(@user.id.to_s)
-    end
-
-    it "returns a 403 if the user is invalid" do
-      expected_response = {
-        "status" => 400,
-        "title" => "User failed to be created",
-        "errors"=>{
-          "twitter_id"=>["can't be blank"],
-          "name"=>["can't be blank"],
-          "image_url"=>["can't be blank"]
-        }
-      }
-      post '/users', { user: { twitter_id: '' } }, { format: 'json' }
-
-      expect(last_response.status).to eq(400)
-      expect(JSON.parse(last_response.body)).to eq(expected_response)
-    end
+    @user.feeds << Feed.new(name: "YOLO", type: "search")
   end
 
   describe "GET /users/:id/feeds/:feed_id" do
@@ -83,7 +43,12 @@ describe 'The web service' do
 
   describe "POST /users/:id/feeds" do
     it "should create a feed for the user" do
-      post "/users/#{@user.id}/feeds", { name: "#golang" }, { format: 'json' }
+      post "/users/#{@user.id}/feeds", {
+        feed: {
+          name: "#golang",
+          type: "search"
+        },
+      }, { format: 'json' }
 
       expect(last_response.status).to eq(201)
       expect(
@@ -96,10 +61,13 @@ describe 'The web service' do
         "status"=> 400,
         "title"=> "Feed failed to be created",
         "errors"=>{
-          "name"=>["can't be blank"]
+          "name"=>["can't be blank"],
+          "type"=>["can't be blank"]
         }
       }
-      post "/users/#{@user.id}/feeds", {}, { format: 'json' }
+      post "/users/#{@user.id}/feeds", {
+        feed: { name: "", type: ""}
+      }, { format: 'json' }
 
       expect(last_response.status).to eq(400)
       expect(
@@ -110,7 +78,12 @@ describe 'The web service' do
 
   describe "PUT /users/:id/feeds/:feed_id" do
     it "should update a single feed for the user" do
-      put "/users/#{@user.id}/feeds/#{@user.feeds.first.id}", {:name => "TOLO"}
+      put "/users/#{@user.id}/feeds/#{@user.feeds.first.id}", {
+        feed: {
+          name: "TOLO",
+          type: "search"
+        }
+      }, { format: 'json' }
 
       expect(last_response.content_type).to eq("application/vnd.api+json")
       expect(
@@ -119,7 +92,12 @@ describe 'The web service' do
     end
 
     it "should return 404 is the feed does not exist" do
-      put "/users/#{@user.id}/feeds/123", {:name => "TOLO"}
+      put "/users/#{@user.id}/feeds/123", {
+        feed: {
+          name: "TOLO",
+          type: "search"
+        }
+      }, { format: 'json' }
 
       expect(last_response.status).to eq(404)
     end
@@ -129,10 +107,16 @@ describe 'The web service' do
         "title"=> "Feed failed to be updated",
         "status" => 400,
         "errors"=>{
-          "name"=>["can't be blank"]
+          "name"=>["can't be blank"],
+          "type"=>["can't be blank"]
         }
       }
-      put "/users/#{@user.id}/feeds/#{@user.feeds.first.id}", {:name => ""}
+      put "/users/#{@user.id}/feeds/#{@user.feeds.first.id}", {
+        feed: {
+          name: "",
+          type: ""
+        }
+      }
 
       expect(last_response.status).to eq(400)
       expect(
@@ -143,7 +127,7 @@ describe 'The web service' do
 
   describe "DELETE /users/:id/feeds/:feed_id" do
     it "should delete a single feed for the user" do
-      @user.feeds << Feed.new(:name => "TOLO")
+      @user.feeds << Feed.new(name: "TOLO", type: "search")
 
       expect(@user.feeds.count).to eq(2)
 

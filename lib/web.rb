@@ -1,40 +1,54 @@
 require 'sinatra'
-require 'mongo'
 require 'mongoid'
-require 'json/ext'
+require 'omniauth-twitter'
 
 configure do
   Mongoid.load!("./mongoid.yml")
+  enable :sessions
+  set :session_secret, ENV['SESSION_SECRET']
 end
 
 before do
   content_type 'application/vnd.api+json'
 end
 
+use OmniAuth::Builder do
+  provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
+end
+
 ### Models ###
 require_relative 'models/user'
 require_relative 'models/feed'
 
-### Routes ###
-post '/users' do
-  @user = User.find_or_create_by(
-    :twitter_id   => params[:user][:twitter_id],
-    :name         => params[:user][:name],
-    :image_url    => params[:user][:image_url],
-  )
-
-  if @user.valid?
-    status 201
-    @user.jsonapi_response
-  else
-    status 400
-    error_status_response(
-      title: "User failed to be created",
-      errors: @user.errors
-    )
-  end
+### HTML Routes ###
+get '/users' do
+  User.last.jsonapi_response
 end
 
+get '/authenticate' do
+  redirect to("/auth/twitter")
+end
+
+get '/auth/twitter/callback' do
+  user = User.where(
+    twitter_id: env['omniauth.auth']["uid"]
+  ).first
+
+  unless user.present?
+    user = User.create!(
+      twitter_id: env['omniauth.auth']['uid'],
+      token:      env['omniauth.auth']['credentials']['token'],
+      secret:     env['omniauth.auth']['credentials']['secret'],
+      name:       env['omniauth.auth']['info']['name'],
+      username:   env['omniauth.auth']['info']['name'],
+      image_url:  env['omniauth.auth']['info']['image']
+    )
+  end
+
+  redirect to("#{ENV['WEB_SERVICE_URL']}?user#{user.id.to_s}")
+end
+
+### JSON Routes ###
 get '/users/:id/feeds/:feed_id' do
   @user = User.find(params[:id])
   @feed = @user.feeds.where(id: params[:feed_id]).first
@@ -49,7 +63,11 @@ end
 
 post '/users/:id/feeds' do
   @user = User.find(params[:id])
-  @feed = Feed.new(:name => params[:name])
+  @feed = Feed.new(
+    name:             params[:feed][:name],
+    type:             params[:feed][:type],
+    search_parameter: params[:feed][:search_parameter]
+  )
   @user.feeds << @feed
 
   if @user.save
@@ -69,9 +87,15 @@ put '/users/:id/feeds/:feed_id' do
   @user = User.find(params[:id])
   @feed = @user.feeds.where(id: params[:feed_id]).first
 
+  update_params = {
+    name:             params[:feed][:name],
+    type:             params[:feed][:type],
+    search_parameter: params[:feed][:search_parameter]
+  }
+
   if !@feed.present?
     status 404
-  elsif @feed.update(:name => params[:name])
+  elsif @feed.update(update_params)
     status 200
     @feed.jsonapi_response
   else
