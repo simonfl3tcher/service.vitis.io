@@ -3,7 +3,7 @@
 TODO:
 
 - [ ] JWT Authentication
-- [ ] Twitter API
+- [ ] FIXME's
 
 Testing:
 

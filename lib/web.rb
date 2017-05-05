@@ -78,7 +78,8 @@ post '/users/:id/feeds' do
   @feed = Feed.new(
     name:             params[:feed][:name],
     type:             params[:feed][:type],
-    search_parameter: params[:feed][:search_parameter]
+    search_parameter: params[:feed][:search_parameter],
+    users:            params[:feed][:users]
   )
   @user.feeds << @feed
 
@@ -102,7 +103,8 @@ put '/users/:id/feeds/:feed_id' do
   update_params = {
     name:             params[:feed][:name],
     type:             params[:feed][:type],
-    search_parameter: params[:feed][:search_parameter]
+    search_parameter: params[:feed][:search_parameter],
+    users:            params[:feed][:users]
   }
 
   if !@feed.present?

@@ -68,6 +68,21 @@ describe 'The web service' do
       ).to eq("#golang")
     end
 
+    it "should create a list feed with users saved" do
+      post "/users/#{@user.id}/feeds", {
+        feed: {
+          name: "TECH",
+          type: "list",
+          users: ['simonfl3tcher', 'TechCrunch']
+        },
+      }, { format: 'json' }
+
+      expect(last_response.status).to eq(201)
+      expect(
+        JSON.parse(last_response.body)["data"]["attributes"]["users"]
+      ).to eq(['simonfl3tcher', 'TechCrunch'])
+    end
+
     it "should return 400 if the feed is not valid" do
       expected_response = {
         "status"=> 400,
@@ -101,6 +116,21 @@ describe 'The web service' do
       expect(
         JSON.parse(last_response.body)["data"]["attributes"]["name"]
       ).to eq("TOLO")
+    end
+
+    it "should update a list feed with users saved" do
+      put "/users/#{@user.id}/feeds/#{@user.feeds.first.id}", {
+        feed: {
+          name: "TOLO",
+          type: "list",
+          users: ['simonfl3tcher', 'TechCrunch']
+        }
+      }, { format: 'json' }
+
+      expect(last_response.status).to eq(200)
+      expect(
+        JSON.parse(last_response.body)["data"]["attributes"]["users"]
+      ).to eq(['simonfl3tcher', 'TechCrunch'])
     end
 
     it "should return 404 is the feed does not exist" do

@@ -10,10 +10,22 @@ describe TwitterService do
       name:       "Andy Blogg",
       image_url: "http://simonfl3tcher.com"
     )
-    @feed1 = Feed.new(name: "timeline", type: "timeline")
-    @feed2 = Feed.new(name: "YOLO", type: "search")
+    @feed1 = Feed.new(
+      name: "timeline",
+      type: "timeline"
+    )
+    @feed2 = Feed.new(
+      name: "YOLO",
+      type: "search"
+    )
+    @feed3 = Feed.new(
+      name: "SMH",
+      type: "list",
+      users: ['simonfl3tcher', 'TechCrunch']
+    )
     @user.feeds << @feed1
     @user.feeds << @feed2
+    @user.feeds << @feed3
   end
 
   before(:each) do
@@ -32,6 +44,14 @@ describe TwitterService do
           "id": 359834923843423,
           "id_str": " 359834923843423",
           "text": "OLLI",
+        }
+      ],
+      :user_timeline => [
+        {
+          "created_at": "Fri May 05 22:12:35 +0000 2017",
+          "id": 359834923843423,
+          "id_str": " 359834923843423",
+          "text": "SMH",
         }
       ]
     )
@@ -63,6 +83,27 @@ describe TwitterService do
               "id": 359834923843423,
               "id_str": " 359834923843423",
               "text": "OLLI",
+            }
+          ]
+        )
+      end
+    end
+
+    describe "list" do
+      it "should return tweets by users (limited to the TwitterService::LIMIT)" do
+        expect(TwitterService.new(user: @user, feed: @feed3).run).to eq(
+          [
+            {
+              "created_at": "Fri May 05 22:12:35 +0000 2017",
+              "id": 359834923843423,
+              "id_str": " 359834923843423",
+              "text": "SMH",
+            },
+            {
+              "created_at": "Fri May 05 22:12:35 +0000 2017",
+              "id": 359834923843423,
+              "id_str": " 359834923843423",
+              "text": "SMH",
             }
           ]
         )
