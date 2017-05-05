@@ -2,19 +2,61 @@ require 'models/user'
 
 describe User do
   describe "Validations" do
-    it "should not be valid without a name" do
+    it "should not be valid without a twitter_id" do
       user = User.new(
-        :twitter_id => "123",
-        :name       => "",
+        :twitter_id => "",
+        :token      => "XYZ",
+        :secret     => "123RTY",
+        :username   => "simonfl3tcher",
+        :name       => "Simon Fletcher",
         :image_url  => "https://simonfl3tcher.com"
       )
       expect(user.valid?).to eq(false)
     end
 
-    it "should not be valid without a twitter_id" do
+    it "should not be valid without a token" do
       user = User.new(
-        :twitter_id => "",
+        :twitter_id => "123",
+        :token      => "",
+        :secret     => "123RTY",
+        :username   => "simonfl3tcher",
         :name       => "Simon Fletcher",
+        :image_url  => "https://simonfl3tcher.com"
+      )
+      expect(user.valid?).to eq(false)
+    end
+
+    it "should not be valid without a secret" do
+      user = User.new(
+        :twitter_id => "123",
+        :token      => "XZY",
+        :secret     => "",
+        :username   => "simonfl3tcher",
+        :name       => "Simon Fletcher",
+        :image_url  => "https://simonfl3tcher.com"
+      )
+      expect(user.valid?).to eq(false)
+    end
+
+    it "should not be valid without a username" do
+      user = User.new(
+        :twitter_id => "123",
+        :token      => "XYZ",
+        :secret     => "123RTY",
+        :username   => "",
+        :name       => "Simon Fletcher",
+        :image_url  => "https://simonfl3tcher.com"
+      )
+      expect(user.valid?).to eq(false)
+    end
+
+    it "should not be valid without a name" do
+      user = User.new(
+        :twitter_id => "123",
+        :token      => "XYZ",
+        :secret     => "123RTY",
+        :username   => "simonfl3tcher",
+        :name       => "",
         :image_url  => "https://simonfl3tcher.com"
       )
       expect(user.valid?).to eq(false)
@@ -23,9 +65,27 @@ describe User do
     it "should not be valid without a image_url" do
       user = User.new(
         :twitter_id => "123",
+        :token      => "XYZ",
+        :secret     => "123RTY",
+        :username   => "simonfl3tcher",
         :name       => "Simon Fletcher",
         :image_url  => ""
       )
+      expect(user.valid?).to eq(false)
+    end
+
+    it "should not be valid when twitter_id exists already" do
+      attributes = {
+        :twitter_id => "123",
+        :token      => "XYZ",
+        :secret     => "123RTY",
+        :username   => "simonfl3tcher",
+        :name       => "Simon Fletcher",
+        :image_url  => "https://simonfl3tcher.com"
+      }
+
+      User.create(attributes)
+      user = User.new(attributes)
       expect(user.valid?).to eq(false)
     end
 

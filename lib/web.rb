@@ -20,6 +20,9 @@ end
 require_relative 'models/user'
 require_relative 'models/feed'
 
+### Services ###
+require_relative 'services/twitter_service'
+
 ### HTML Routes ###
 get '/users' do
   User.last.jsonapi_response
@@ -41,7 +44,13 @@ get '/auth/twitter/callback' do
       secret:     env['omniauth.auth']['credentials']['secret'],
       name:       env['omniauth.auth']['info']['name'],
       username:   env['omniauth.auth']['info']['name'],
-      image_url:  env['omniauth.auth']['info']['image']
+      image_url:  env['omniauth.auth']['info']['image'],
+      feeds_attributes: [
+        {
+          name: 'Timeline',
+          type: 'timeline'
+        }
+      ]
     )
   end
 
@@ -55,7 +64,10 @@ get '/users/:id/feeds/:feed_id' do
 
   if @feed
     status 200
-    @feed.jsonapi_response
+    TwitterService.new(
+      user: @user,
+      feed: @feed
+    ).run.to_json
   else
     status 404
   end

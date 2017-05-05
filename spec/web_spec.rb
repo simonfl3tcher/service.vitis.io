@@ -25,12 +25,24 @@ describe 'The web service' do
   end
 
   describe "GET /users/:id/feeds/:feed_id" do
+    before(:each) do
+      service_obj = double(:run => [
+        {
+          "created_at": "Fri May 05 22:12:35 +0000 2017",
+          "id": 359834923843423,
+          "id_str": " 359834923843423",
+          "text": "YOLO",
+        }
+      ])
+      allow(TwitterService).to receive(:new).and_return(service_obj)
+    end
+
     it "should return the single feed for the user" do
       get "/users/#{@user.id}/feeds/#{@user.feeds.first.id}"
 
       expect(last_response.content_type).to eq("application/vnd.api+json")
       expect(
-        JSON.parse(last_response.body)["data"]["attributes"]["name"]
+        JSON.parse(last_response.body)[0]["text"]
       ).to eq("YOLO")
     end
 
@@ -62,7 +74,7 @@ describe 'The web service' do
         "title"=> "Feed failed to be created",
         "errors"=>{
           "name"=>["can't be blank"],
-          "type"=>["can't be blank"]
+          "type"=>["can't be blank", "is not included in the list"]
         }
       }
       post "/users/#{@user.id}/feeds", {
@@ -108,7 +120,7 @@ describe 'The web service' do
         "status" => 400,
         "errors"=>{
           "name"=>["can't be blank"],
-          "type"=>["can't be blank"]
+          "type"=>["can't be blank", "is not included in the list"]
         }
       }
       put "/users/#{@user.id}/feeds/#{@user.feeds.first.id}", {
