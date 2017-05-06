@@ -21,8 +21,8 @@ describe Feed do
     describe 'users' do
       it 'should validate presence if type is a list' do
         feed = Feed.new(
-          name: 'Simon Fletcher',
-          type: 'list',
+          name:  'Simon Fletcher',
+          type:  'list',
           users: []
         )
 
@@ -31,8 +31,8 @@ describe Feed do
 
       it 'should not validate presence if type is not a list' do
         feed = Feed.new(
-          name: 'Simon Fletcher',
-          type: 'search',
+          name:  'Simon Fletcher',
+          type:  'search',
           users: []
         )
 
@@ -59,8 +59,8 @@ describe Feed do
 
       it 'should be valid with a type of list (needs to have users)' do
         feed = Feed.new(
-          name: 'Simon Fletcher',
-          type: 'list',
+          name:  'Simon Fletcher',
+          type:  'list',
           users: ['simonfl3tcher']
         )
         expect(feed.valid?).to eq(true)

@@ -14,15 +14,15 @@ describe Public do
     before(:each) do
       OmniAuth.config.mock_auth[:twitter] = OmniAuth::AuthHash.new(
         provider: 'twitter',
-        uid: '12345',
+        uid:      '12345',
         credentials: {
-          token: '123',
+          token:  '123',
           secret: '456'
         },
         info: {
-          name: 'Simon Fletcher',
+          name:     'Simon Fletcher',
           username: 'simonfl3tcher',
-          image: 'http://simonfl3tcher.com'
+          image:    'http://simonfl3tcher.com'
         }
       )
     end

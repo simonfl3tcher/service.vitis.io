@@ -7,11 +7,11 @@ module JWTHelper
 
   def payload(user_id, username)
     {
-      exp: Time.now.to_i + 60 * 60,
-      iat: Time.now.to_i,
-      iss: ENV['JWT_ISSUER'],
+      exp:    Time.now.to_i + 60 * 60,
+      iat:    Time.now.to_i,
+      iss:    ENV['JWT_ISSUER'],
       scopes: %w[create_feed update_feed delete_feed view_feed],
-      user: {
+      user:   {
         id: user_id,
         username: username
       }

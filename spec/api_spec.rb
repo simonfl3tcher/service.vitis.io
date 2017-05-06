@@ -6,7 +6,7 @@ describe Api do
       secret:     '1231241',
       username:   'simonfl3tcher',
       name:       'Andy Blogg',
-      image_url: 'http://simonfl3tcher.com'
+      image_url:  'http://simonfl3tcher.com'
     )
     @user.feeds << Feed.new(name: 'YOLO', type: 'search')
   end
@@ -19,14 +19,16 @@ describe Api do
 
     describe 'GET /users/:id/feeds/:feed_id' do
       before(:each) do
-        service_obj = double(run: [
-                               {
-                                 created_at: 'Fri May 05 22:12:35 +0000 2017',
-                                 id: 359_834_923_843_423,
-                                 id_str: ' 359834923843423',
-                                 text: 'YOLO'
-                               }
-                             ])
+        service_obj = double(
+          run: [
+            {
+              created_at: 'Fri May 05 22:12:35 +0000 2017',
+              id:         359_834_923_843_423,
+              id_str:     ' 359834923843423',
+              text:       'YOLO'
+            }
+          ]
+        )
         allow(TwitterService).to receive(:new).and_return(service_obj)
       end
 
@@ -79,7 +81,7 @@ describe Api do
       it 'should return 400 if the feed is not valid' do
         expected_response = {
           'status' => 400,
-          'title' => 'Feed failed to be created',
+          'title'  => 'Feed failed to be created',
           'errors' => {
             'name' => ["can't be blank"],
             'type' => ["can't be blank", 'is not included in the list']
@@ -139,7 +141,7 @@ describe Api do
 
       it 'should return 400 if the feed is invalid' do
         expected_response = {
-          'title' => 'Feed failed to be updated',
+          'title'  => 'Feed failed to be updated',
           'status' => 400,
           'errors' => {
             'name' => ["can't be blank"],

@@ -87,7 +87,7 @@ class Api < Sinatra::Base
       else
         status 400
         error_status_response(
-          title: 'Feed failed to be updated',
+          title:  'Feed failed to be updated',
           errors: @feed.errors
         )
       end
@@ -111,7 +111,7 @@ class Api < Sinatra::Base
   def error_status_response(title: 'Failed', errors: [])
     {
       status: 400,
-      title: title,
+      title:  title,
       errors: errors
     }.to_json
   end

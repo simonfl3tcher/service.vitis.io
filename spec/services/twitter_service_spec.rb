@@ -8,7 +8,7 @@ describe TwitterService do
       secret:     '1231241',
       username:   'simonfl3tcher',
       name:       'Andy Blogg',
-      image_url: 'http://simonfl3tcher.com'
+      image_url:  'http://simonfl3tcher.com'
     )
     @feed1 = Feed.new(
       name: 'timeline',
@@ -33,25 +33,25 @@ describe TwitterService do
       home_timeline: [
         {
           created_at: 'Fri May 05 22:12:35 +0000 2017',
-          id: 359_834_923_843_423,
-          id_str: ' 359834923843423',
-          text: 'YOLO'
+          id:         359_834_923_843_423,
+          id_str:     '359834923843423',
+          text:       'YOLO'
         }
       ],
       search: [
         {
           created_at: 'Fri May 05 22:12:35 +0000 2017',
-          id: 359_834_923_843_423,
-          id_str: ' 359834923843423',
-          text: 'OLLI'
+          id:         359_834_923_843_423,
+          id_str:     '359834923843423',
+          text:       'OLLI'
         }
       ],
       user_timeline: [
         {
           created_at: 'Fri May 05 22:12:35 +0000 2017',
-          id: 359_834_923_843_423,
-          id_str: ' 359834923843423',
-          text: 'SMH'
+          id:         359_834_923_843_423,
+          id_str:     '359834923843423',
+          text:       'SMH'
         }
       ]
     )
@@ -65,9 +65,9 @@ describe TwitterService do
           [
             {
               created_at: 'Fri May 05 22:12:35 +0000 2017',
-              id: 359_834_923_843_423,
-              id_str: ' 359834923843423',
-              text: 'YOLO'
+              id:         359_834_923_843_423,
+              id_str:     '359834923843423',
+              text:       'YOLO'
             }
           ]
         )
@@ -80,9 +80,9 @@ describe TwitterService do
           [
             {
               created_at: 'Fri May 05 22:12:35 +0000 2017',
-              id: 359_834_923_843_423,
-              id_str: ' 359834923843423',
-              text: 'OLLI'
+              id:         359_834_923_843_423,
+              id_str:     '359834923843423',
+              text:       'OLLI'
             }
           ]
         )
@@ -95,15 +95,15 @@ describe TwitterService do
           [
             {
               created_at: 'Fri May 05 22:12:35 +0000 2017',
-              id: 359_834_923_843_423,
-              id_str: ' 359834923843423',
-              text: 'SMH'
+              id:         359_834_923_843_423,
+              id_str:     '359834923843423',
+              text:       'SMH'
             },
             {
               created_at: 'Fri May 05 22:12:35 +0000 2017',
-              id: 359_834_923_843_423,
-              id_str: ' 359834923843423',
-              text: 'SMH'
+              id:         359_834_923_843_423,
+              id_str:     '359834923843423',
+              text:       'SMH'
             }
           ]
         )
