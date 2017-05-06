@@ -1,13 +1,13 @@
 require 'twitter'
 
 class TwitterService
-  LIMIT=5
+  LIMIT = 5
 
   def initialize(user:, feed:)
     @feed = feed
     @client = Twitter::REST::Client.new do |config|
-      config.consumer_key        = ENV["TWITTER_CONSUMER_KEY"]
-      config.consumer_secret     = ENV["TWITTER_CONSUMER_SECRET"]
+      config.consumer_key        = ENV['TWITTER_CONSUMER_KEY']
+      config.consumer_secret     = ENV['TWITTER_CONSUMER_SECRET']
       config.access_token        = user.token
       config.access_token_secret = user.secret
     end
@@ -15,11 +15,11 @@ class TwitterService
 
   def run
     case @feed.type
-    when "timeline"
+    when 'timeline'
       list_tweets_from_timeline
-    when "search"
+    when 'search'
       list_tweets_from_search
-    when "list"
+    when 'list'
       list_tweets_from_users
     end
   end
@@ -33,8 +33,8 @@ class TwitterService
   def list_tweets_from_search
     @client.search(
       @feed.search_parameter,
-      result_type:  "recent",
-      lang:         "en",
+      result_type:  'recent',
+      lang:         'en',
       include_rts:  false
     ).take(LIMIT)
   end
