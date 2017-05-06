@@ -4,9 +4,9 @@ require 'sinatra/base'
 require 'mongoid'
 require 'omniauth-twitter'
 
-require 'helpers/jwt_helper'
-require 'models/user'
-require 'models/feed'
+require_relative 'helpers/jwt_helper'
+require_relative 'models/user'
+require_relative 'models/feed'
 
 class Public < Sinatra::Base
   include JWTHelper
@@ -48,7 +48,7 @@ class Public < Sinatra::Base
         token:      env['omniauth.auth']['credentials']['token'],
         secret:     env['omniauth.auth']['credentials']['secret'],
         name:       env['omniauth.auth']['info']['name'],
-        username:   env['omniauth.auth']['info']['username'],
+        username:   env['omniauth.auth']['info']['nickname'],
         image_url:  env['omniauth.auth']['info']['image'],
         feeds_attributes: [
           {
@@ -59,10 +59,10 @@ class Public < Sinatra::Base
       )
     end
 
-    response.headers['Authorization'] = create_jwt_token(
+    token = create_jwt_token(
       user.id.to_s,
       user.username
     )
-    redirect to(ENV['WEB_SERVICE_URL'])
+    redirect to("#{ENV['WEB_SERVICE_URL']}?token=#{token}")
   end
 end

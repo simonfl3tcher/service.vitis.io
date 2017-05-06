@@ -4,11 +4,11 @@ require 'sinatra/base'
 require 'mongoid'
 require 'omniauth-twitter'
 
-require 'models/user'
-require 'models/feed'
-require 'services/twitter_service'
-require 'services/jwt_auth'
-require 'helpers/jwt_helper'
+require_relative 'models/user'
+require_relative 'models/feed'
+require_relative 'services/twitter_service'
+require_relative 'services/jwt_auth'
+require_relative 'helpers/jwt_helper'
 
 class Api < Sinatra::Base
   include JWTHelper
@@ -23,9 +23,35 @@ class Api < Sinatra::Base
 
   before do
     content_type 'application/vnd.api+json'
+    headers["Access-Control-Allow-Origin"]  = ENV['WEB_SERVICE_URL']
+    headers["Access-Control-Allow-Headers"] = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    headers["Access-Control-Allow-Credentials"] = "true"
+    headers["Access-Control-Allow-Methods"] = %w[
+      POST
+      PUT
+      DELETE
+      GET
+      OPTIONS
+    ]
   end
 
   ### Routes ###
+  options '*' do
+    halt 200
+  end
+
+  get '/users/:id' do
+    @user = User.find(params[:id])
+    process_request(request, 'view_feed', @user) do |_req|
+      if @user
+        status 200
+        @user.jsonapi_response
+      else
+        status 404
+      end
+    end
+  end
+
   get '/users/:id/feeds/:feed_id' do
     @user = User.find(params[:id])
     process_request(request, 'view_feed', @user) do |_req|
@@ -45,6 +71,7 @@ class Api < Sinatra::Base
 
   post '/users/:id/feeds' do
     @user = User.find(params[:id])
+    p params
     process_request(request, 'create_feed', @user) do |_req|
       @feed = Feed.new(
         name:             params[:feed][:name],

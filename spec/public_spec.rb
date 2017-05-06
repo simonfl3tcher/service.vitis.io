@@ -21,7 +21,7 @@ describe Public do
         },
         info: {
           name:     'Simon Fletcher',
-          username: 'simonfl3tcher',
+          nickname: 'simonfl3tcher',
           image:    'http://simonfl3tcher.com'
         }
       )
@@ -59,8 +59,7 @@ describe Public do
       user = User.last
       token = create_jwt_token(user.id.to_s, user.username)
 
-      expect(last_response.location).to eq('http://example.org/')
-      expect(last_response.headers['Authorization']).to eq(token)
+      expect(last_response.location).to eq("http://example.org/?token=#{token}")
     end
 
     after(:each) do

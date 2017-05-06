@@ -13,6 +13,7 @@ class TwitterService
     end
   end
 
+  # FIXME: should be JSONAPI spec
   def run
     case @feed.type
     when 'timeline'
