@@ -23,7 +23,7 @@ class User
   def jsonapi_response
     {
       data: {
-        type: "users",
+        type: 'users',
         id: id.to_s,
         attributes: attributes,
         relationships: {

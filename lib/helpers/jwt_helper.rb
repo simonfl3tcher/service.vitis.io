@@ -10,7 +10,7 @@ module JWTHelper
       exp: Time.now.to_i + 60 * 60,
       iat: Time.now.to_i,
       iss: ENV['JWT_ISSUER'],
-      scopes: ['create_feed', 'update_feed', 'delete_feed', 'view_feed'],
+      scopes: %w[create_feed update_feed delete_feed view_feed],
       user: {
         id: user_id,
         username: username
@@ -24,7 +24,7 @@ module JWTHelper
     user_id  = user['id']
 
     if scopes.include?(scope) &&
-        potential_user.id.to_s == user_id && potential_user.username == username
+       potential_user.id.to_s == user_id && potential_user.username == username
       yield req
     else
       status 403

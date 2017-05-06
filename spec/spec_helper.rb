@@ -31,7 +31,9 @@ require File.expand_path '../../lib/helpers/jwt_helper.rb', __FILE__
 module RSpecMixin
   include Rack::Test::Methods
   include JWTHelper
-  def app() described_class end
+  def app
+    described_class
+  end
 end
 
 RSpec.configure do |config|
@@ -53,8 +55,8 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.before(:each) do |example|
-    DatabaseCleaner.strategy= :truncation
+  config.before(:each) do |_example|
+    DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.start
   end
 

@@ -16,7 +16,7 @@ class Api < Sinatra::Base
 
   ### Sinatra Setup ###
   configure do
-    Mongoid.load!("./mongoid.yml")
+    Mongoid.load!('./mongoid.yml')
     enable :sessions
     set :session_secret, ENV['SESSION_SECRET']
   end
@@ -28,7 +28,7 @@ class Api < Sinatra::Base
   ### Routes ###
   get '/users/:id/feeds/:feed_id' do
     @user = User.find(params[:id])
-    process_request(request, 'view_feed', @user) do |req|
+    process_request(request, 'view_feed', @user) do |_req|
       @feed = @user.feeds.where(id: params[:feed_id]).first
 
       if @feed
@@ -45,7 +45,7 @@ class Api < Sinatra::Base
 
   post '/users/:id/feeds' do
     @user = User.find(params[:id])
-    process_request(request, 'create_feed', @user) do |req|
+    process_request(request, 'create_feed', @user) do |_req|
       @feed = Feed.new(
         name:             params[:feed][:name],
         type:             params[:feed][:type],
@@ -60,7 +60,7 @@ class Api < Sinatra::Base
       else
         status 400
         error_status_response(
-          title: "Feed failed to be created",
+          title: 'Feed failed to be created',
           errors: @feed.errors
         )
       end
@@ -69,7 +69,7 @@ class Api < Sinatra::Base
 
   put '/users/:id/feeds/:feed_id' do
     @user = User.find(params[:id])
-    process_request(request, 'update_feed', @user) do |req|
+    process_request(request, 'update_feed', @user) do |_req|
       @feed = @user.feeds.where(id: params[:feed_id]).first
 
       update_params = {
@@ -87,7 +87,7 @@ class Api < Sinatra::Base
       else
         status 400
         error_status_response(
-          title: "Feed failed to be updated",
+          title: 'Feed failed to be updated',
           errors: @feed.errors
         )
       end
@@ -96,7 +96,7 @@ class Api < Sinatra::Base
 
   delete '/users/:id/feeds/:feed_id' do
     @user = User.find(params[:id])
-    process_request(request, 'delete_feed', @user) do |req|
+    process_request(request, 'delete_feed', @user) do |_req|
       feed = @user.feeds.where(id: params[:feed_id])
 
       if !feed.present?
@@ -108,7 +108,7 @@ class Api < Sinatra::Base
   end
 
   ### Methods ###
-  def error_status_response(title: "Failed", errors: [])
+  def error_status_response(title: 'Failed', errors: [])
     {
       status: 400,
       title: title,

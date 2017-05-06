@@ -13,7 +13,7 @@ class Public < Sinatra::Base
 
   ### Sinatra Setup ###
   configure do
-    Mongoid.load!("./mongoid.yml")
+    Mongoid.load!('./mongoid.yml')
     enable :sessions
     set :session_secret, ENV['SESSION_SECRET']
   end
@@ -23,7 +23,9 @@ class Public < Sinatra::Base
   end
 
   use OmniAuth::Builder do
-    provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
+    provider :twitter,
+             ENV['TWITTER_CONSUMER_KEY'],
+             ENV['TWITTER_CONSUMER_SECRET']
   end
 
   ### Routes ###
@@ -32,12 +34,12 @@ class Public < Sinatra::Base
   end
 
   get '/authenticate' do
-    redirect to("/auth/twitter")
+    redirect to('/auth/twitter')
   end
 
   get '/auth/twitter/callback' do
     user = User.where(
-      twitter_id: env['omniauth.auth']["uid"]
+      twitter_id: env['omniauth.auth']['uid']
     ).first
 
     unless user.present?
@@ -57,7 +59,10 @@ class Public < Sinatra::Base
       )
     end
 
-    response.headers['Authorization'] = create_jwt_token(user.id.to_s, user.username)
+    response.headers['Authorization'] = create_jwt_token(
+      user.id.to_s,
+      user.username
+    )
     redirect to(ENV['WEB_SERVICE_URL'])
   end
 end

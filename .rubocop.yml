@@ -1,0 +1,14 @@
+AllCops:
+  Excludes:
+    - "bin/*"
+Documentation:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Metrics/BlockLength:
+  Exclude:
+    - "**/*_spec.rb"

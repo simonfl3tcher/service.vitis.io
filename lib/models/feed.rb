@@ -1,5 +1,5 @@
 class Feed
-  FEED_TYPES=['timeline', 'search', 'list']
+  FEED_TYPES = %w[timeline search list].freeze
 
   include Mongoid::Document
 
@@ -10,7 +10,7 @@ class Feed
 
   validates_presence_of :name
   validates_presence_of :type
-  validates_presence_of :users, if: lambda { |f| f.type == 'list' }
+  validates_presence_of :users, if: ->(f) { f.type == 'list' }
 
   validates_inclusion_of :type, in: FEED_TYPES
 
@@ -19,7 +19,7 @@ class Feed
   def jsonapi_response
     {
       data: {
-        type: "feed",
+        type: 'feed',
         id: id.to_s,
         attributes: attributes,
         relationships: {
