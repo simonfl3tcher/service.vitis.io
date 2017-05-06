@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'mongoid'
 require 'omniauth-twitter'
+require 'jwt'
 
 configure do
   Mongoid.load!("./mongoid.yml")
@@ -22,6 +23,9 @@ require_relative 'models/feed'
 
 ### Services ###
 require_relative 'services/twitter_service'
+require_relative 'services/jwt_auth'
+
+use JwtAuth
 
 ### HTML Routes ###
 get '/users' do
@@ -43,7 +47,7 @@ get '/auth/twitter/callback' do
       token:      env['omniauth.auth']['credentials']['token'],
       secret:     env['omniauth.auth']['credentials']['secret'],
       name:       env['omniauth.auth']['info']['name'],
-      username:   env['omniauth.auth']['info']['name'],
+      username:   env['omniauth.auth']['info']['username'],
       image_url:  env['omniauth.auth']['info']['image'],
       feeds_attributes: [
         {
@@ -54,22 +58,24 @@ get '/auth/twitter/callback' do
     )
   end
 
-  redirect to("#{ENV['WEB_SERVICE_URL']}?user#{user.id.to_s}")
+  redirect to("#{ENV['WEB_SERVICE_URL']}?user#{token(user.id.to_s, user.username)}")
 end
 
 ### JSON Routes ###
 get '/users/:id/feeds/:feed_id' do
   @user = User.find(params[:id])
-  @feed = @user.feeds.where(id: params[:feed_id]).first
+  process_request(request, 'view_feed', @user) do |req|
+    @feed = @user.feeds.where(id: params[:feed_id]).first
 
-  if @feed
-    status 200
-    TwitterService.new(
-      user: @user,
-      feed: @feed
-    ).run.to_json
-  else
-    status 404
+    if @feed
+      status 200
+      TwitterService.new(
+        user: @user,
+        feed: @feed
+      ).run.to_json
+    else
+      status 404
+    end
   end
 end
 
@@ -138,4 +144,33 @@ def error_status_response(title: "Failed", errors: [])
     title: title,
     errors: errors
   }.to_json
+end
+
+def token(user_id, username)
+  JWT.encode payload(user_id, username), ENV['JWT_SECRET'], 'HS256'
+end
+
+def payload(user_id, username)
+  {
+    exp: Time.now.to_i + 60 * 60,
+    iat: Time.now.to_i,
+    iss: ENV['JWT_ISSUER'],
+    scopes: ['create_feed', 'update_feed', 'delete_feed', 'view_feed'],
+    user: {
+      id: user_id,
+      username: username
+    }
+  }
+end
+
+def process_request(req, scope, potential_user)
+  scopes, user = req.env.values_at :scopes, :user
+  username = user['username']
+  user_id  = user['id']
+
+  if scopes.include?(scope) && potential_user.id.to_s == user_id && potential_user.username == username
+    yield req
+  else
+    status 403
+  end
 end
