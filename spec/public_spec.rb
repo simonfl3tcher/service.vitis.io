@@ -53,15 +53,6 @@ describe Public do
       expect(user.feeds.first.type).to eq('timeline')
     end
 
-    it 'should redirect to web service with JWT' do
-      get '/auth/twitter/callback'
-
-      user = User.last
-      token = create_jwt_token(user.id.to_s, user.username)
-
-      expect(last_response.location).to eq("http://example.org/?token=#{token}")
-    end
-
     after(:each) do
       OmniAuth.config.mock_auth[:twitter] = nil
     end

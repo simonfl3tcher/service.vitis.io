@@ -2,19 +2,21 @@
 
 ## Build Setup
 
+Make sure that you have MongoDB installed on your local machine before running through the setup below.
+
 ```bash
 
 # clone repository
 git clone git@github.com:simonfl3tcher/service.vitis.io.git
 
 # install dependencies
-bundle
-
-# run tests
-bin/rspec --format doc
+cd service.vitis.io.git && bundle install
 
 # copy & update environment
 cp .env.example .env && cp .env.example .env.test
+
+# run tests
+bin/rspec --format doc
 
 # boot up server
 foreman start
