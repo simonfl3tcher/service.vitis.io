@@ -71,7 +71,6 @@ class Api < Sinatra::Base
 
   post '/users/:id/feeds' do
     @user = User.find(params[:id])
-    p params
     process_request(request, 'create_feed', @user) do |_req|
       @feed = Feed.new(
         name:             params[:feed][:name],

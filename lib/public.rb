@@ -63,6 +63,14 @@ class Public < Sinatra::Base
       user.id.to_s,
       user.username
     )
-    redirect to("#{ENV['WEB_SERVICE_URL']}?token=#{token}")
+    {
+      data: {
+        type: 'token',
+        id: user.id.to_s,
+        attributes: user.attributes.merge(
+          { token: token }
+        )
+      }
+    }.to_json
   end
 end
